@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
-import 'package:ku/loading.dart';
 
 import 'package:ku/Storage.dart';
 
@@ -13,21 +12,24 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
-  String token;
+  dynamic token;
   String dataFromFile;
+
   _SignInState({Key key}) {
     dataFromFile = "Empty";
   }
-  @override
+
+@override
   void initState() {
     super.initState();
-
-    Storage user = new Storage("user.json");
-    user.readData().then((String recordedData) {
-      Map<String, dynamic> jsonData = jsonDecode(recordedData);
-      print(" SAVED ");
+    print("Token Printed!!!");
+    Storage userData = new Storage("user.json");
+    userData.readData().then((String uData) {
+      Map<String, dynamic> savedUser = jsonDecode(uData);
+      Map<String, dynamic> tk = savedUser["token"];
+      print(tk);
       setState(() {
-        token = jsonData["token"];
+        token = tk;
       });
     });
   }
@@ -68,6 +70,7 @@ class _SignInState extends State<SignIn> {
       print(dataToStore);
       Storage user = new Storage("user.json");
       user.writeData(dataToStore);
+      Navigator.pushNamed(context, "/App");
     }
   }
 
