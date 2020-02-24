@@ -21,6 +21,7 @@ void main() {
   user.readData().then((String recordedData) {
     Map<String, dynamic> jsonData = jsonDecode(recordedData);
     print(" SAVED ");
+    print(jsonData["token"]["expiration"]);
     token = jsonData["token"];
   });
 
