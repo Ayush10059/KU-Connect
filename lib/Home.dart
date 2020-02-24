@@ -5,8 +5,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_analog_clock/flutter_analog_clock.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
-import 'package:ku/loading.dart';
-
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
