@@ -14,49 +14,32 @@ class Loading extends StatefulWidget {
 }
 
 class _LoadingState extends State<Loading> {
-    String dataFromFile;
+    bool signedIn;
     dynamic token;
-
-  _LoadingState({Key key}) {
-    dataFromFile = "Empty";
-  }
 
  @override
   void initState() {
     super.initState();
-    print("Token Printed!!!");
-    Storage userData = new Storage("user.json");
-    userData.readData().then((String uData) {
-      Map<String, dynamic> savedUser = jsonDecode(uData);
-      Map<String, dynamic> tk = savedUser["token"];
-      print(tk);
-      setState(() {
-        token = tk;
-      });
+    String token = "";
+    print("Here");
+    Storage user = new Storage("user.json");
+    user.readData().then((String recordedData) {
+      try {
+        Map<String, dynamic> jsonData = jsonDecode(recordedData);
+        print(" SAVED ");
+        token = jsonData["token"].toString();
+        signedIn = token.length > 0 ? true : false;
+      } catch (e) {
+        print("error reading json");
+        print(e);
+        signedIn = false;
+      }
+      if (signedIn)
+        Navigator.pushReplacementNamed(context, "/App");
+      else
+        Navigator.pushReplacementNamed(context, "/signin");
     });
-//    Storage storage = new Storage("data.json");
-//    storage.readData().then((String recordedData) {
-//      Map<String, dynamic> jsonData = jsonDecode(recordedData);
-//      print("Data: ");
-//      List dt = jsonData["docs"];
-//      for (int i = 0; i < 6; i++) {
-//        if (now.weekday == i) {
-//          for (int j = 0; j < dt.length; j++) {
-//            int wd = jsonData["docs"][j]["weekDay"];
-//            if (wd == i) {
-//              print(jsonData["docs"][j]["time"]);
-//              //ti.add(jsonData["docs"][j]["time"].toString());
-//            }
-//          }
-//        }
-//      }
-//      setState(() {
-//        dataFromFile = recordedData;
-//        t = ti;
-//      });
-//      print(ti);
-//    });
-  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -69,19 +52,5 @@ class _LoadingState extends State<Loading> {
         ),
       ),
     );
-  }
-  
-    Future<File> data() async {
-  
-    var body = jsonEncode(token);
-
-    Response response = await post('http://34.227.26.246/api/data/get', headers: headers, body: body);
-
-    String dataToStore = response.body.toString();
-    print(dataToStore);
-    Storage storage = new Storage("data.json");
-
-    Navigator.pushNamed(context, '/App');
-    return storage.writeData(dataToStore);
   }
 }

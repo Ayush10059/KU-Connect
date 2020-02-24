@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ku/Storage.dart';
+import 'package:ku/signin.dart';
 
 class Profile extends StatefulWidget {
   @override
@@ -30,7 +32,12 @@ class _ProfileState extends State<Profile> {
               Center(child: FlatButton(
                 color: Colors.redAccent[100],
                 child: Text('Logout'),
-                onPressed: () {},
+                onPressed: () {
+                  Storage user = new Storage("user.json");
+                  user.writeData("");
+                  Navigator.pushReplacement(context,new MaterialPageRoute(
+                    builder: (context) => SignIn()));
+                }
               ),
               )
           ],
