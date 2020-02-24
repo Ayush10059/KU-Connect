@@ -24,7 +24,7 @@ class _RegisterState extends State<Register> {
 
     String body = '{"name": "' + name.trim() + '", "email": "' + email.trim() + '", "code": "' + code.trim() + '"}';
     print(body);
-    Response response = await post('http://18.204.210.62/api/user/create', headers: headers, body: body);
+    Response response = await post('http://34.227.26.246/api/user/create', headers: headers, body: body);
 
     Map<String, dynamic> resp = jsonDecode(response.body);
 

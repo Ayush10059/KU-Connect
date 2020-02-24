@@ -70,16 +70,18 @@ class _LoadingState extends State<Loading> {
       ),
     );
   }
-    
+  
     Future<File> data() async {
   
     var body = jsonEncode(token);
 
-    Response response = await post('http://18.204.210.62/api/data/get', headers: headers, body: body);
+    Response response = await post('http://34.227.26.246/api/data/get', headers: headers, body: body);
 
     String dataToStore = response.body.toString();
     print(dataToStore);
     Storage storage = new Storage("data.json");
+
+    Navigator.pushNamed(context, '/App');
     return storage.writeData(dataToStore);
   }
 }
