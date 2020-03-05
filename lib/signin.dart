@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
+import 'package:ku/Load.dart';
 
 import 'package:ku/Storage.dart';
 
@@ -12,6 +14,7 @@ class SignIn extends StatefulWidget {
 }
 
 class _SignInState extends State<SignIn> {
+  
   dynamic token;
   String dataFromFile;
 
@@ -22,15 +25,26 @@ class _SignInState extends State<SignIn> {
 @override
   void initState() {
     super.initState();
-    print("Token Printed!!!");
+
     Storage userData = new Storage("user.json");
     userData.readData().then((String uData) {
-      Map<String, dynamic> savedUser = jsonDecode(uData);
-      Map<String, dynamic> tk = savedUser["token"];
-      print(tk);
-      setState(() {
-        token = tk;
-      });
+      if (uData != "error") {
+        if (uData.length != 0) {
+          Map<String, dynamic> uDataMap = jsonDecode(uData);
+          DateTime now = new DateTime.now();
+          int currentTime = now.millisecondsSinceEpoch;
+          if (currentTime < uDataMap["token"]["expiration"]) {
+            Storage routineData = new Storage("routine.json");
+            routineData.readData().then((String rData) {
+              if (rData == "null" || rData.length == 0) {
+                Navigator.pushReplacementNamed(context, "/load");
+              } else {
+                Navigator.pushReplacementNamed(context, "/app");
+              }
+            });
+          }
+        }
+      }
     });
   }
 
@@ -48,30 +62,50 @@ class _SignInState extends State<SignIn> {
   String code = '';
   String errorRegister = '';
 
-  getData() async {
+  getData() {
+    
     String body = '{"pass": "' + pass.trim() + '", "code": "' + code.trim() + '"}';
-    print(body);
-    Response response = await post('http://34.227.26.246/api/user/signin', headers: headers, body: body);
 
-    Map<String, dynamic> resp = jsonDecode(response.body);
+    post('http://34.227.26.246/api/user/signin', headers: headers, body: body).then((Response res) {
+      Map<String, dynamic> signInRes = jsonDecode(res.body.toString());
+      if (signInRes["Error"].toString() == "null") {
+        token = signInRes["token"];
+        String exp = token["expiration"].toString();
+        String tc = token["ticket"].toString();
+        String bodyStr = '{ "token" : { "expiration" : $exp , "ticket" : "$tc"  } }';
+        Storage userData = new Storage("user.json");
+        userData.writeData(bodyStr).then((File uFile) {
+          Navigator.pushReplacementNamed(context, "/load");
+        });
+      }
+    });
 
-    if (resp["Error"] != null)
-      setState(() {
-        errorRegister = resp["Error"];
-        loading = false;
-      });
-    else {
-      setState(() {
-        errorRegister = '';
-        loading = false;
-      });
-      print(resp);
-      String dataToStore = response.body.toString();
-      print(dataToStore);
-      Storage user = new Storage("user.json");
-      user.writeData(dataToStore);
-      Navigator.pushNamed(context, "/App");
-    }
+    // String body = '{"pass": "' + pass.trim() + '", "code": "' + code.trim() + '"}';
+    // print(body);
+    // Response response = await post('http://34.227.26.246/api/user/signin', headers: headers, body: body);
+
+    // Map<String, dynamic> resp = jsonDecode(response.body);
+
+    // if (resp["Error"] != null)
+    //   setState(() {
+    //     errorRegister = resp["Error"];
+    //     loading = false;
+    //   });
+    // else {
+    //   setState(() {
+    //     errorRegister = '';
+    //     loading = false;
+    //   });
+    //   String dataToStore = response.body.toString();
+    //   print(dataToStore);
+    //   Storage user = new Storage("user.json");
+    //   user.writeData(dataToStore);
+    //   Navigator.pushReplacement(context, new MaterialPageRoute(
+    //                 builder: (context) => Load(),
+    //                 settings: RouteSettings(arguments: token)
+    //                 )
+    //   );
+    // }
   }
 
     @override

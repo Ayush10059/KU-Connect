@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-import 'package:ku/loading.dart';
 import 'package:http/http.dart';
+import 'package:ku/Splash.dart';
 
 class Register extends StatefulWidget {
   @override
@@ -50,7 +50,7 @@ class _RegisterState extends State<Register> {
 
   @override
   Widget build(BuildContext context) {
-    return loading ? Loading() :  Scaffold(
+    return loading ? Splash() :  Scaffold(
 
       backgroundColor: Colors.white,
       appBar: AppBar(
