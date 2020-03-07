@@ -13,7 +13,7 @@ void main() {
       '/app': (context) => App(),
       '/signin': (context) => SignIn(),
       '/register': (context) => Register(),
-      '/load' : (context) => Load()
+      '/load' : (context) => Load(),
     }
   ));
 }

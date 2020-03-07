@@ -6,7 +6,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart';
 
 import 'package:ku/Storage.dart';
-import 'package:ku/signin.dart';
 
 class Load extends StatefulWidget {
   @override

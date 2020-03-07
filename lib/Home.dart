@@ -5,26 +5,29 @@ import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_analog_clock/flutter_analog_clock.dart';
+import 'package:ku/Routine.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
 
 import 'package:ku/Storage.dart';
-import 'package:ku/Record.dart';
-
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-Future uFuture;
 
 DateTime now = new DateTime.now();
+
+var weekDay = DateFormat.d().format(now);
+
+var wd = int.parse(weekDay);
 
 var day = DateFormat.EEEE().format(now);
 var date = DateFormat.yMMMd().format(now);
 var time = DateFormat.jm().format(now);
 
 class _HomeState extends State<Home> {
+Future <List <Record>> uFuture;
   @override
   void initState() {
     super.initState();
@@ -32,18 +35,22 @@ class _HomeState extends State<Home> {
     uFuture = getData();
   }
 
-  getData() {
+  Future <List <Record>> getData() async {
     Storage routinedata = new Storage("routine.json");
-    routinedata.readData().then((String rData) {
-      var rDataMap = jsonDecode(rData);
-      print("data: $rDataMap");
-      List <Record> today = [];
-      for (var rec in rDataMap) {
-        if (4 == rec["weekDay"])
-          today.add(Record(rec["weekDay"], rec["time"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"]));
+    String rData = await routinedata.readData();
+    var rDataMap =  jsonDecode(rData);
+    print("data: $rDataMap");
+    List <Record> today = [];
+    for (var rec in rDataMap) {
+      if (weekDay == rec["weekDay"]) {
+        today.add(Record(rec["weekDay"], rec["time"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"]));
       }
-      print(today);
-    });
+    }
+    print(weekDay.runtimeType);
+    print(wd.runtimeType);
+    print(today.length);
+
+    return today;
   }
 
   @override
@@ -51,10 +58,10 @@ class _HomeState extends State<Home> {
     return Scaffold (
       body: Material(
           child: FutureBuilder(
-            future: getData(),
-            builder: (BuildContext, AsyncSnapshot snapshot) {
-              return ListView( children: <Widget>[
-                
+            future: uFuture,
+            builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
+              return ListView(
+                children: <Widget>[
                   Padding(
                     padding: const EdgeInsets.all(20.0),  
                     child: Column(
@@ -110,13 +117,25 @@ class _HomeState extends State<Home> {
                       amPmDigitTextStyle: TextStyle(color: Colors.blueGrey, fontWeight: FontWeight.bold),
                     ),
                   ),
-                  // ListView.builder(
-                  //   itemBuilder: (context, index) {
-                  //     return Card(
 
-                  //     )
-                  //   }
-                  //   )
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        child: ListTile(
+                          title: Text(snapshot.data[1].subject),
+                          subtitle: Text(snapshot.data[1].facSem),
+                          onTap: () {
+                            Navigator.push(context,
+                             MaterialPageRoute(builder: (context) => Routine(snapshot.data[1]))
+                            );
+                          }
+                        ),
+                      );
+                  }
+                )
               ],
             );
           }
@@ -124,4 +143,16 @@ class _HomeState extends State<Home> {
       )
     );
   }
+}
+
+class Record {
+  final int weekDay;
+  final int time;
+  final String subject;
+  final String sCode;
+  final String lecturer;
+  final String classroom;
+  final String facSem;
+
+  Record(this.weekDay, this.time, this.subject, this.sCode, this.lecturer, this.classroom, this.facSem);
 }

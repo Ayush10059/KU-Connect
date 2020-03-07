@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart';
-import 'package:ku/Load.dart';
 
 import 'package:ku/Storage.dart';
 
@@ -79,33 +78,6 @@ class _SignInState extends State<SignIn> {
         });
       }
     });
-
-    // String body = '{"pass": "' + pass.trim() + '", "code": "' + code.trim() + '"}';
-    // print(body);
-    // Response response = await post('http://34.227.26.246/api/user/signin', headers: headers, body: body);
-
-    // Map<String, dynamic> resp = jsonDecode(response.body);
-
-    // if (resp["Error"] != null)
-    //   setState(() {
-    //     errorRegister = resp["Error"];
-    //     loading = false;
-    //   });
-    // else {
-    //   setState(() {
-    //     errorRegister = '';
-    //     loading = false;
-    //   });
-    //   String dataToStore = response.body.toString();
-    //   print(dataToStore);
-    //   Storage user = new Storage("user.json");
-    //   user.writeData(dataToStore);
-    //   Navigator.pushReplacement(context, new MaterialPageRoute(
-    //                 builder: (context) => Load(),
-    //                 settings: RouteSettings(arguments: token)
-    //                 )
-    //   );
-    // }
   }
 
     @override
@@ -197,7 +169,7 @@ class _SignInState extends State<SignIn> {
                   ],
                 ),
               ),
-              new Align(child: loadingIndicator, alignment: FractionalOffset.topRight,),
+              Align(child: loadingIndicator, alignment: FractionalOffset.topRight,),
             ]
             ),
           ),
