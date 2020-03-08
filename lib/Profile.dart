@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:ku/Settings.dart';
 import 'package:ku/Storage.dart';
-import 'package:ku/signin.dart';
 
 class Profile extends StatefulWidget {
   @override
