@@ -56,7 +56,7 @@ class _SplashState extends State<Splash> {
     return Container(
       color: Colors.white,
       child: Center(
-        child: Icon(Icons.account_circle),
+        child: Image.asset('assets/KU_logo.png',)
       ),
     );
   }

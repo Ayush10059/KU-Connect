@@ -19,6 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    
   path_provider: ^1.6.5
   flutter_analog_clock: ^0.1.0
   slide_digital_clock: ^1.0.0
@@ -41,6 +42,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
+  assets:
+      - assets/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

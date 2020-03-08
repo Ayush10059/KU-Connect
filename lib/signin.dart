@@ -90,8 +90,11 @@ class _SignInState extends State<SignIn> {
     return new Scaffold(
           backgroundColor: Colors.white,
           appBar: AppBar(
-            backgroundColor: Colors.green[400],
-            title: Text('Log In'),
+
+            leading: Image.asset("assets/KU.png"),
+            backgroundColor: Colors.white,
+            centerTitle: true,
+            title: Text('Log In', style: TextStyle(color: Colors.black),),
             actions: <Widget>[
               FlatButton.icon(
                   icon: Icon(Icons.person_add),

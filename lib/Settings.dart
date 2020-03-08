@@ -28,6 +28,12 @@ class _SettingsState extends State<Settings> {
   Widget build(BuildContext context) {
     return Material(
       child: Scaffold(
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text("Settings", style: TextStyle(color: Colors.black)),
+          leading: Image.asset('assets/KU.png'),
+          backgroundColor: Colors.white,
+        ),
         body: Container(
           margin: const EdgeInsets.fromLTRB(0.0,20.0,0.0,0.0),
             child: ListView(

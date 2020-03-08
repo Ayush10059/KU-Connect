@@ -54,8 +54,6 @@ class _LoadState extends State<Load> {
       post('http://34.227.26.246/api/data/get', headers: headers, body: bodyStr).then((Response res) {
         Storage routinedata = new Storage("routine.json");
         routinedata.writeData(res.body.toString()).then((File routineFile) {
-          print("Data written to file...");
-          print(res.body.toString());
           Navigator.pushReplacementNamed(context, "/app");
         });
       });

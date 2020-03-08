@@ -54,8 +54,10 @@ class _RegisterState extends State<Register> {
 
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        title: Text('Join KU Connect'),
+        centerTitle: true,
+        leading: Image.asset("assets/KU.png"),
+        backgroundColor: Colors.white,
+        title: Text('Join KU Connect', style: TextStyle(color: Colors.black),),
 
       ),
 

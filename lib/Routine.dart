@@ -12,34 +12,40 @@ class Routine extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(cls.subject),
+        leading: Image.asset('assets/KU.png'),
+        backgroundColor: Colors.white,
         ),
 
       body: Padding(
         padding: const EdgeInsets.all(20.0),
-        child: Center(
           child: ListView(
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Subject Code: " + cls.sCode),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(cls.subject, style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold),),
+                    Text(cls.sCode, style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),)
+                  ],
+                ),
+              ),
+              SizedBox(height: 20.0,),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text("Lecturer: " + cls.lecturer, style: TextStyle(fontSize: 18.0),),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Lecturer: " + cls.lecturer),
+                child: Text("Classroom: " + cls.classroom, style: TextStyle(fontSize: 18.0),),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text("Classroom: " + cls.classroom),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text("Department / Semester: " + cls.facSem),
+                child: Text("Department: " + cls.facSem, style: TextStyle(fontSize: 18.0),),
               ),
             ],
           ),
-        )
-      ),
+        ),
     );
   }
 }
