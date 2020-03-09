@@ -71,6 +71,18 @@ class _SignInState extends State<SignIn> {
         String exp = token["expiration"].toString();
         String tc = token["ticket"].toString();
         String bodyStr = '{ "token" : { "expiration" : $exp , "ticket" : "$tc"  } }';
+
+        String name = signInRes["user"]["name"].toString();
+        String email = signInRes["user"]["email"].toString();
+        String code = signInRes["user"]["code"].toString();
+        String faculty = signInRes["user"]["faculty"].toString();
+        String joinYear = signInRes["user"]["joinYear"].toString();
+        String currentYear = signInRes["user"]["currentYear"].toString();
+        String userD = '{ "name" : "$name" , "email" : "$email" , "code" : "$code" , "faculty" : "$faculty" , "joinYear" : "$joinYear" , "currentYear" : "$currentYear" }';
+
+        Storage local = new Storage("local.json");        
+        local.writeData(userD);
+
         Storage userData = new Storage("user.json");
         userData.writeData(bodyStr).then((File uFile) {
           Navigator.pushReplacementNamed(context, "/load");
@@ -89,17 +101,17 @@ class _SignInState extends State<SignIn> {
   return new Scaffold(
     backgroundColor: Colors.white,
     appBar: AppBar(
-      leading: Image.asset("assets/KU.png"),
+      leading: Image.asset("assets/KU.png", scale: 4.0,),
       backgroundColor: Colors.white,
       centerTitle: true,
-      title: Text('Log In', style: TextStyle(color: Colors.black),),
+      title: Text('Sign In', style: TextStyle(color: Colors.black),),
       actions: <Widget>[
         FlatButton.icon(
-            icon: Icon(Icons.person_add),
-            label: Text('Register'),
-            onPressed: () {
-              Navigator.pushNamed(context, '/register',);
-            }
+          icon: Icon(Icons.person_add),
+          label: Text('Register'),
+          onPressed: () {
+            Navigator.pushNamed(context, '/register',);
+          }
         )
       ],
     ),
@@ -107,6 +119,7 @@ class _SignInState extends State<SignIn> {
     body: Container(
       padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 50.0),
       child: Stack(children: <Widget>[ 
+
         Form(
           key: _formKey,
           child: Column(
@@ -115,8 +128,8 @@ class _SignInState extends State<SignIn> {
               SizedBox(height: 20.0),
               TextFormField(
                 decoration: InputDecoration(
-                    icon: Icon(Icons.person),
-                    hintText: 'ID-Code'
+                  icon: Icon(Icons.person),
+                  hintText: 'ID-Code'
                 ),
                 validator: (val) => val.isEmpty ? 'Enter ID-code' : null,
                 onChanged: (val) {
@@ -135,13 +148,13 @@ class _SignInState extends State<SignIn> {
               TextFormField(
                 obscureText: _obscureText,
                 decoration: InputDecoration(
-                    icon: Icon(Icons.lock),
-                    hintText: 'Password',
-                    suffixIcon: IconButton(onPressed: _toggle,
-                      icon: _obscureText
-                          ? Icon(Icons.visibility_off)
-                          : Icon(Icons.visibility),
-                    )
+                  icon: Icon(Icons.lock),
+                  hintText: 'Password',
+                  suffixIcon: IconButton(onPressed: _toggle,
+                    icon: _obscureText
+                        ? Icon(Icons.visibility_off)
+                        : Icon(Icons.visibility),
+                  )
                 ),
                 validator: (val) => val.length !=4 ? 'Enter the 4 length pin' : null,
                 onChanged: (val) {

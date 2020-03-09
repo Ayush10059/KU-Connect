@@ -24,27 +24,36 @@ class _SplashState extends State<Splash> {
       if (recordedData != "error") {
         if (recordedData.length == 0) {
           Navigator.pushReplacementNamed(context, "/signin");
-        } else {
+        } 
+        
+        else {
           Map<String, dynamic> userData = jsonDecode(recordedData);
           DateTime now = new DateTime.now();
           int currentTime = now.millisecondsSinceEpoch;
+
           if (currentTime < userData["token"]["expiration"]) {
             Storage routineData = new Storage("routine.json");
             routineData.readData().then((String rData) {
               if (rData == "null" || rData.length == 0) {
                 print("Routing to loader");
                 Navigator.pushReplacementNamed(context, "/load");
-              } else {
+              }
+              
+              else {
                 print("Routing to main");
                 Navigator.pushReplacementNamed(context, "/app");
               }
             });
-          } else {
+          }
+          
+          else {
             print("Routing to signin");
             Navigator.pushReplacementNamed(context, "/signin");
           }
         }
-      } else {
+      }
+      
+      else {
         print("File not found. Routing...");
         Navigator.pushReplacementNamed(context, "/signin");
       }

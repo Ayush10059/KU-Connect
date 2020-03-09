@@ -17,8 +17,8 @@ class Home extends StatefulWidget {
 
 DateTime now = new DateTime.now();
 
-var weekDay = DateFormat.d().format(now);
-var day = DateFormat.EEEE().format(now);
+var day = DateFormat.d().format(now);
+var weekDay = DateFormat.EEEE().format(now);
 var date = DateFormat.yMMMd().format(now);
 var time = DateFormat.jm().format(now);
 
@@ -38,8 +38,9 @@ Future<List<Record>> _uFuture;
     String rData = await routinedata.readData();
     var rDataMap =  jsonDecode(rData);
     List <Record> today = [];
+    List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     for (var rec in rDataMap) {
-      if (5 == rec["weekDay"]) {
+      if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
         today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
       }
     }
@@ -49,6 +50,8 @@ Future<List<Record>> _uFuture;
       today.add(Record(1, "No Class today", "0", "0", "0", "0", "Sunrise", "Sunset"));
     }
 
+    // for (var t in today)
+    //   print(t.startTime);
     return today;
   }
 
@@ -69,7 +72,7 @@ Future<List<Record>> _uFuture;
               padding: const EdgeInsets.all(20.0),  
                 child: Column(
                   children: <Widget> [
-                    Text(day, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),),
+                    Text(weekDay, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),),
                     Text(date, style: TextStyle(fontSize: 20.0, color: Colors.black54),),
                   ]
                 )

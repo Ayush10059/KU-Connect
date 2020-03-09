@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+
 import 'package:http/http.dart';
 
 import 'package:ku/Storage.dart';
@@ -17,7 +18,7 @@ class _LoadState extends State<Load> {
   String errorRegister = "";
   Map<String, dynamic> token;
 
-  Future<String> check = Future<String>.delayed(
+  Future check = Future<String>.delayed(
   Duration(seconds: 2)
   );
 
@@ -52,6 +53,7 @@ class _LoadState extends State<Load> {
       String tc = token["ticket"].toString();
       String bodyStr = '{ "token" : { "expiration" : $exp , "ticket" : "$tc"  } }';
       post('http://34.227.26.246/api/data/get', headers: headers, body: bodyStr).then((Response res) {
+        print(res.body);
         Storage routinedata = new Storage("routine.json");
         routinedata.writeData(res.body.toString()).then((File routineFile) {
           Navigator.pushReplacementNamed(context, "/app");

@@ -1,7 +1,8 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:ku/Settings.dart';
+
 import 'package:ku/Storage.dart';
 
 class Profile extends StatefulWidget {
@@ -9,7 +10,34 @@ class Profile extends StatefulWidget {
   _ProfileState createState() => _ProfileState();
 }
 
+
 class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin{
+
+  String name, email, faculty, joinYear, currentYear;
+  String code;
+  Future fut;
+
+@override
+void initState() {
+  super.initState();
+
+  fut = getData();
+}
+
+Future getData() async {
+  Storage user = new Storage("local.json");
+  String uData = await user.readData();
+  Map<String, dynamic> uDataMap = jsonDecode(uData);
+  setState(() {
+    name = uDataMap["name"];
+    email = uDataMap["email"];
+    code = uDataMap["code"];
+    faculty = uDataMap["faculty"];
+    joinYear = uDataMap["joinYear"];
+    currentYear = uDataMap["currentYear"];
+    return 0;
+  });
+}
 
   @override
 Widget build(BuildContext context) {
@@ -20,48 +48,66 @@ Widget build(BuildContext context) {
           centerTitle: true,
           title: Text("Profile", style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
-          actions: <Widget>[
-            IconButton(icon: Icon(
-              Icons.settings, color: Colors.black,),
-                onPressed: () {
-                  Navigator.push(
-                    context, MaterialPageRoute(builder: (context) => Settings())
-                  );
-                }
-            )
-          ],
         ),
 
-        body: ListView(
-          children: [
-            Center(child: Image.asset('assets/KU.png', scale: 4.0,)),
+        body:  FutureBuilder(
+                    future: fut,
+                    builder: (BuildContext context, snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting)
+                      return Container();
+  
+                      else
+                        return Container(
+                          child: Center(
+                            child: Column(
+                              children: [
+                                Image.asset('assets/KU.png', scale: 4.0,),
 
-            Padding(padding: EdgeInsets.only(top: 50.0)),
+                                Padding(padding: EdgeInsets.only(top: 40.0),
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    physics: ClampingScrollPhysics(),
+                                    children: <Widget>[
 
-            Center(child: Text('Ayush Bajracharya', style:  TextStyle(fontWeight: FontWeight.bold),)),
-            Center(child: Text('Bsc. Computer Science')),
-            Center(child: Text('School of Science')),
+                                      ListTile(
+                                        title: Center(child: Text(code, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
+                                      ),
+                                      
 
-            Padding(padding: EdgeInsets.only(top: 30.0)),
+                                      ListTile(
+                                        title: Center(child: Text('Batch: ' + joinYear, style: TextStyle(fontWeight: FontWeight.bold),)),
+                                        subtitle: Center(child: Text('Current year: ' + currentYear)),
+                                      ),
 
-            Center(child: Text('SUSSCS18004', style:  TextStyle(fontWeight: FontWeight.bold),)),
+                                      ListTile(
+                                        title: Center(child: Text(name, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
+                                        subtitle: Center(child: Text(email)),
+                                      )
+                                    ],
+                                  ),
+                                ),
 
-            Padding(padding: EdgeInsets.only(top: 50.0)),
-
-            Center(child: FlatButton(
-              color: Colors.redAccent[100],
-              child: Text('Logout'),
-              onPressed: () {
-                Storage user = new Storage("user.json");
-                user.writeData("").then((File fs) {
-                  print("Data cleared...");
-                  Navigator.pushReplacementNamed(context, "/signin");
-                });
-              }),
-            )
-          ],
-        ),
-      ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 40.0),
+                                  child: Center(child: FlatButton(
+                                    color: Colors.redAccent[100],
+                                    child: Text('Sign out'),
+                                    onPressed: () {
+                                      Storage user = new Storage("user.json");
+                                      user.writeData("").then((File fs) {
+                                        print("Data cleared...");
+                                        Navigator.pushReplacementNamed(context, "/signin");
+                                      });
+                            }),
+                          ),
+                        )
+                        ],
+                      ),
+                  ),
+                );
+              }
+       ),
+      )
     );
   }
 

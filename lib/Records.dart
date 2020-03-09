@@ -13,14 +13,14 @@ class Records extends StatefulWidget {
 
 class _RecordsState extends State<Records> with AutomaticKeepAliveClientMixin{
 
-List<Future<List<Record>>> d;
+List<Future<List<Record>>> d=[];
 
   @override
   void initState() {
     super.initState();
 
     for(int i = 0; i < 7; i++)
-      d[i] = getData(i);
+      d.add(getData(i+1));
   }
 
   Future <List <Record>> getData(int i) async {
@@ -48,40 +48,55 @@ List<Future<List<Record>>> d;
 
       body: Container(
         child: ListView(
-          children: <Widget>[ for (var i = 0; i < 7; i++)
-            
-            FutureBuilder<List<Record>>(
-              future: d[i],
-              initialData: [],
-              builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting)
-                return Container();
+          children: List.generate(d.length, (index) {
+          List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", ""];
+            return  Container(
+              child: ListView(
+                shrinkWrap: true,
+                physics: ClampingScrollPhysics(),
+                children: <Widget>[
 
-                else
-                  return Container(
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: ClampingScrollPhysics(),
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        return Card(
-                            child : ListTile(
-                              title: Text(snapshot.data[index].subject),
-                              subtitle: Text(snapshot.data[index].startTime + "-" + snapshot.data[index].endTime),
-                              onTap: () {
-                                if (snapshot.data[0].lecturer != "0")
-                                Navigator.push(context,
-                                MaterialPageRoute(builder: (context) => Routine(snapshot.data[index]))
-                                );
-                              }
-                            )
+                  Padding(
+                    padding: EdgeInsets.all(20.0),
+                    child: Text(week[index], style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
+                  ),
+
+                  FutureBuilder<List<Record>>(
+                    future: d[index],
+                    initialData: [],
+                    builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
+                      if(snapshot.connectionState == ConnectionState.waiting)
+                      return Container();
+  
+                      else
+                        return Container(
+                          child: ListView.builder(
+                            shrinkWrap: true,
+                            physics: ClampingScrollPhysics(),
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) {
+                              return Card(
+                                  child: ListTile(
+                                    title: Text(snapshot.data[index].subject),
+                                    subtitle: Text(snapshot.data[index].startTime + " - " + snapshot.data[index].endTime),
+                                    onTap: () {
+                                      if (snapshot.data[0].lecturer != "0")
+                                      Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => Routine(snapshot.data[index]))
+                                      );
+                                    }
+                                  )
+                              );
+                            },
+                          ),
                         );
-                      },
-                    ),
-                  );
-              }
-            ),
-          ],
+                    }
+                  )
+                ],
+              ),
+            );
+          }
+          )
         ),
       ),
     );
