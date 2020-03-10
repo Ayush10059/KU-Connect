@@ -22,17 +22,76 @@ var weekDay = DateFormat.EEEE().format(now);
 var date = DateFormat.yMMMd().format(now);
 var time = DateFormat.jm().format(now);
 
+var min = time.toString().split(":",)[1].split(" ")[0];
+var periods = time.toString().split(":",)[1].split(" ")[1];
+
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
 
-Future<List<Record>> _uFuture;
+List<Future<List<Record>>> _uFuture = [];
 
   @override
   void initState() {
     super.initState();
 
-    _uFuture = getData();
+    _uFuture.add(getData());
+    _uFuture.add(getUpcomingData());
+    _uFuture.add(getUpcomingData());
   }
 
+  
+  Future <List <Record>> getUpcomingData() async {
+    Storage routinedata = new Storage("routine.json");
+    String rData = await routinedata.readData();
+    var rDataMap =  jsonDecode(rData);
+    List <Record> today = [];
+    List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    for (var rec in rDataMap) {
+      if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
+        var hour = int.parse(time.toString().split(":",)[0]);
+        if (periods == "PM")
+          hour += 12;      
+        var timeNow = int.parse(hour.toString() + "" + min);
+        var timeRecStart = int.parse(rec["startTime"].toString().split(":").join());
+        print("Current: $timeRecStart");
+        print("Current: $timeNow");
+        print(" ");
+        if (timeNow < timeRecStart) {
+          print("Upcoming: $timeRecStart");
+          today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
+        }
+      }
+    }
+    return today;
+  }
+
+  Future <List <Record>> getPrevData() async {
+    Storage routinedata = new Storage("routine.json");
+    String rData = await routinedata.readData();
+    var rDataMap =  jsonDecode(rData);
+    List <Record> today = [];
+    List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    for (var rec in rDataMap) {
+      if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
+        var hour = int.parse(time.toString().split(":",)[0]);
+        if (periods == "PM")
+          hour += 12;      
+        var timeNow = int.parse(hour.toString() + "" + min);
+        var timeRecEnd = int.parse(rec["endTime"].toString().split(":").join());
+        print("Current: $timeNow");
+        print("Current: $timeRecEnd");
+        print(" ");
+        if (timeNow > timeRecEnd) {
+          print("Prev: $timeRecEnd");
+          today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
+        }
+      }
+    }
+    for (var t in today)
+      print(t.sCode);
+    return today;
+  }
+  
+  
   Future <List <Record>> getData() async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
@@ -41,17 +100,21 @@ Future<List<Record>> _uFuture;
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
-        today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
+        var hour = int.parse(time.toString().split(":",)[0]);
+        if (periods == "PM")
+          hour += 12;
+        var timeNow = int.parse(hour.toString() + "" + min);
+        var timeRecStart = int.parse(rec["startTime"].toString().split(":").join());
+        var timeRecEnd = int.parse(rec["endTime"].toString().split(":").join());
+        print("Current: $timeRecStart");
+        print("Current: $timeNow");
+        print("Current: $timeRecEnd");
+        print(" ");
+        if (timeRecStart <= timeNow && timeNow <= timeRecEnd) {
+          today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
+        }
       }
     }
-
-    if (today.length == 0)
-    {
-      today.add(Record(1, "No Class today", "0", "0", "0", "0", "Sunrise", "Sunset"));
-    }
-
-    // for (var t in today)
-    //   print(t.startTime);
     return today;
   }
 
@@ -125,7 +188,7 @@ Future<List<Record>> _uFuture;
             ),
 
             FutureBuilder(
-              future: _uFuture,
+              future: _uFuture[2],
               builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
                 if(snapshot.connectionState == ConnectionState.waiting)
                 return Container();
