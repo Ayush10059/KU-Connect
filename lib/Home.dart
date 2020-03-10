@@ -22,8 +22,8 @@ var weekDay = DateFormat.EEEE().format(now);
 var date = DateFormat.yMMMd().format(now);
 var time = DateFormat.jm().format(now);
 
-var min = time.toString().split(":",)[1].split(" ")[0];
-var periods = time.toString().split(":",)[1].split(" ")[1];
+var min = time.toString().split(":")[1].split(" ")[0];
+var periods = time.toString().split(":")[1].split(" ")[1];
 
 class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
 
@@ -33,9 +33,9 @@ List<Future<List<Record>>> _uFuture = [];
   void initState() {
     super.initState();
 
-    _uFuture.add(getData());
+    _uFuture.add(getOngoingData());
     _uFuture.add(getUpcomingData());
-    _uFuture.add(getUpcomingData());
+    _uFuture.add(getPrevData());
   }
 
   
@@ -47,16 +47,12 @@ List<Future<List<Record>>> _uFuture = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
-        var hour = int.parse(time.toString().split(":",)[0]);
+        var hour = int.parse(time.toString().split(":")[0]);
         if (periods == "PM")
-          hour += 12;      
+          hour += 12;   
         var timeNow = int.parse(hour.toString() + "" + min);
-        var timeRecStart = int.parse(rec["startTime"].toString().split(":").join());
-        print("Current: $timeRecStart");
-        print("Current: $timeNow");
-        print(" ");
-        if (timeNow < timeRecStart) {
-          print("Upcoming: $timeRecStart");
+        var timeRecStart = rec["startTime"].toString().split(":").join();
+        if (timeNow < int.parse(timeRecStart)) {
           today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
         }
       }
@@ -72,16 +68,12 @@ List<Future<List<Record>>> _uFuture = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
-        var hour = int.parse(time.toString().split(":",)[0]);
+        var hour = int.parse(time.toString().split(":")[0]);
         if (periods == "PM")
           hour += 12;      
         var timeNow = int.parse(hour.toString() + "" + min);
-        var timeRecEnd = int.parse(rec["endTime"].toString().split(":").join());
-        print("Current: $timeNow");
-        print("Current: $timeRecEnd");
-        print(" ");
-        if (timeNow > timeRecEnd) {
-          print("Prev: $timeRecEnd");
+        var timeRecEnd = rec["endTime"].toString().split(":").join();
+        if (timeNow > int.parse(timeRecEnd)) {
           today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
         }
       }
@@ -92,7 +84,7 @@ List<Future<List<Record>>> _uFuture = [];
   }
   
   
-  Future <List <Record>> getData() async {
+  Future <List <Record>> getOngoingData() async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
     var rDataMap =  jsonDecode(rData);
@@ -100,17 +92,14 @@ List<Future<List<Record>>> _uFuture = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
-        var hour = int.parse(time.toString().split(":",)[0]);
+        var hour = int.parse(time.toString().split(":")[0]);
         if (periods == "PM")
           hour += 12;
         var timeNow = int.parse(hour.toString() + "" + min);
-        var timeRecStart = int.parse(rec["startTime"].toString().split(":").join());
-        var timeRecEnd = int.parse(rec["endTime"].toString().split(":").join());
-        print("Current: $timeRecStart");
-        print("Current: $timeNow");
-        print("Current: $timeRecEnd");
+        var timeRecStart = rec["startTime"].toString().split(":").join();
+        var timeRecEnd = rec["endTime"].toString().split(":").join();
         print(" ");
-        if (timeRecStart <= timeNow && timeNow <= timeRecEnd) {
+        if (int.parse(timeRecStart) <= timeNow && timeNow <= int.parse(timeRecEnd)) {
           today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
         }
       }
@@ -187,6 +176,68 @@ List<Future<List<Record>>> _uFuture = [];
               ),
             ),
 
+            Text("Ongoing"),
+
+            FutureBuilder(
+              future: _uFuture[0],
+              builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting)
+                return Container();
+
+                else
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {                  
+                      return Card(
+                        child: ListTile(
+                        title: Text(snapshot.data[index].subject),
+                        subtitle: Text(snapshot.data[index].startTime + " - " + snapshot.data[index].endTime),
+                        onTap: () {
+                          if (snapshot.data[0].lecturer != "0")
+                          Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Routine(snapshot.data[index]))
+                          );
+                        }
+                      ),
+                    );
+                  }
+                );
+              }
+            ),
+            Text("Upcoming"),
+
+            FutureBuilder(
+              future: _uFuture[1],
+              builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
+                if(snapshot.connectionState == ConnectionState.waiting)
+                return Container();
+
+                else
+                  return ListView.builder(
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {                  
+                      return Card(
+                        child: ListTile(
+                        title: Text(snapshot.data[index].subject),
+                        subtitle: Text(snapshot.data[index].startTime + " - " + snapshot.data[index].endTime),
+                        onTap: () {
+                          if (snapshot.data[0].lecturer != "0")
+                          Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Routine(snapshot.data[index]))
+                          );
+                        }
+                      ),
+                    );
+                  }
+                );
+              }
+            ),
+            Text("Previous"),
+
             FutureBuilder(
               future: _uFuture[2],
               builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
@@ -214,7 +265,7 @@ List<Future<List<Record>>> _uFuture = [];
                   }
                 );
               }
-            )
+            ),
           ],
         ),
       ),
