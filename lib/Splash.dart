@@ -10,6 +10,7 @@ class Splash extends StatefulWidget {
 }
 
 class _SplashState extends State<Splash> {
+
     bool signedIn;
     bool isData;
     String token;
@@ -18,6 +19,7 @@ class _SplashState extends State<Splash> {
  @override
   void initState() {
     super.initState();
+    
     token = "";
     Storage user = new Storage("user.json");
     user.readData().then((String recordedData) {
