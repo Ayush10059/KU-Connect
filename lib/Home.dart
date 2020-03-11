@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_analog_clock/flutter_analog_clock.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:ku/Storage.dart';
 import 'package:ku/Routine.dart';
@@ -14,6 +15,8 @@ class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 DateTime now = new DateTime.now();
 
@@ -33,11 +36,18 @@ List<Future<List<Record>>> _uFuture = [];
   void initState() {
     super.initState();
 
+    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+    var android = new AndroidInitializationSettings('@drawable/ku');
+    var ios = new IOSInitializationSettings();
+    var initSetttings = new InitializationSettings(android,ios);
+    flutterLocalNotificationsPlugin.initialize(initSetttings, //onSelectNotification: selectNotification
+    );
+
+
     _uFuture.add(getOngoingData());
     _uFuture.add(getUpcomingData());
     _uFuture.add(getPrevData());
   }
-
   
   Future <List <Record>> getUpcomingData() async {
     Storage routinedata = new Storage("routine.json");
@@ -45,6 +55,7 @@ List<Future<List<Record>>> _uFuture = [];
     var rDataMap =  jsonDecode(rData);
     List <Record> today = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    int count = 0;
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
         var hour = int.parse(time.toString().split(":")[0]);
@@ -53,6 +64,12 @@ List<Future<List<Record>>> _uFuture = [];
         var timeNow = int.parse(hour.toString() + "" + min);
         var timeRecStart = rec["startTime"].toString().split(":").join();
         if (timeNow < int.parse(timeRecStart)) {
+          if (count == 0){
+            print(count);
+            await showNotification(count, rec["subject"], rec["startTime"], rec["classroom"]);
+            print(count);
+            count++;
+          }
           today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
         }
       }
@@ -66,6 +83,7 @@ List<Future<List<Record>>> _uFuture = [];
     var rDataMap =  jsonDecode(rData);
     List <Record> today = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+    
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
         var hour = int.parse(time.toString().split(":")[0]);
@@ -78,8 +96,8 @@ List<Future<List<Record>>> _uFuture = [];
         }
       }
     }
-    for (var t in today)
-      print(t.sCode);
+    // for (var t in today)
+    //   print(t.sCode);
     return today;
   }
   
@@ -105,6 +123,38 @@ List<Future<List<Record>>> _uFuture = [];
       }
     }
     return today;
+  }
+
+  // Future<void> selectNotification(String payload) {
+  //   showDialog(
+  //     context: context,
+  //     builder: (_) => new AlertDialog(
+  //       title: Text("KU-Connect"),
+  //       content: Text(payload),
+  //     )
+  //   );
+  // }
+
+  Future<void> showNotification(int id, String sub, String st, String cls) async {
+    var android = new AndroidNotificationDetails(
+        'id', 'NAME', 'DESCRIPTION',
+        priority: Priority.High,
+        importance: Importance.Max,
+        enableVibration: true
+    );
+    var iOS = new IOSNotificationDetails();
+    var platform = new NotificationDetails(android, iOS);
+    print("Notification set: $id $sub $st $cls");
+    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
+        id,
+        '$sub',
+        'You have class at $st in block/class $cls',
+        Day.Thursday,
+        Time(08, 45, 0),
+        platform,
+        // payload: 'lol $sub'
+    );
+    print("yeah");
   }
 
   @override
@@ -176,7 +226,10 @@ List<Future<List<Record>>> _uFuture = [];
               ),
             ),
 
-            Text("Ongoing"),
+            Padding(
+              padding: const EdgeInsets.only(left: 5.0, bottom: 8.0),
+              child: Text("Ongoing Class: ", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
+            ),
 
             FutureBuilder(
               future: _uFuture[0],
@@ -206,7 +259,11 @@ List<Future<List<Record>>> _uFuture = [];
                 );
               }
             ),
-            Text("Upcoming"),
+
+            Padding(
+              padding: const EdgeInsets.only(left: 5.0, top: 10.0, bottom: 10.0),
+              child: Text("Upcoming Class(es): ", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
+            ),
 
             FutureBuilder(
               future: _uFuture[1],
@@ -235,42 +292,13 @@ List<Future<List<Record>>> _uFuture = [];
                   }
                 );
               }
-            ),
-            Text("Previous"),
-
-            FutureBuilder(
-              future: _uFuture[2],
-              builder: (BuildContext context, AsyncSnapshot <List <Record>> snapshot) {
-                if(snapshot.connectionState == ConnectionState.waiting)
-                return Container();
-
-                else
-                  return ListView.builder(
-                    shrinkWrap: true,
-                    physics: ClampingScrollPhysics(),
-                    itemCount: snapshot.data.length,
-                    itemBuilder: (context, index) {                  
-                      return Card(
-                        child: ListTile(
-                        title: Text(snapshot.data[index].subject),
-                        subtitle: Text(snapshot.data[index].startTime + " - " + snapshot.data[index].endTime),
-                        onTap: () {
-                          if (snapshot.data[0].lecturer != "0")
-                          Navigator.push(context,
-                          MaterialPageRoute(builder: (context) => Routine(snapshot.data[index]))
-                          );
-                        }
-                      ),
-                    );
-                  }
-                );
-              }
-            ),
+            )
           ],
         ),
       ),
     );
   }
+
   
   @override
   bool get wantKeepAlive => true;
