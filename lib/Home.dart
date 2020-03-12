@@ -6,7 +6,6 @@ import 'package:intl/intl.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_analog_clock/flutter_analog_clock.dart';
 import 'package:slide_digital_clock/slide_digital_clock.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:ku/Storage.dart';
 import 'package:ku/Routine.dart';
@@ -16,7 +15,6 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
 
 DateTime now = new DateTime.now();
 
@@ -28,21 +26,13 @@ var time = DateFormat.jm().format(now);
 var min = time.toString().split(":")[1].split(" ")[0];
 var periods = time.toString().split(":")[1].split(" ")[1];
 
-class _HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
+class _HomeState extends State<Home> {
 
 List<Future<List<Record>>> _uFuture = [];
 
   @override
   void initState() {
     super.initState();
-
-    flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-    var android = new AndroidInitializationSettings('@drawable/ku');
-    var ios = new IOSInitializationSettings();
-    var initSetttings = new InitializationSettings(android,ios);
-    flutterLocalNotificationsPlugin.initialize(initSetttings, //onSelectNotification: selectNotification
-    );
-
 
     _uFuture.add(getOngoingData());
     _uFuture.add(getUpcomingData());
@@ -55,7 +45,6 @@ List<Future<List<Record>>> _uFuture = [];
     var rDataMap =  jsonDecode(rData);
     List <Record> today = [];
     List <String> week = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    int count = 0;
     for (var rec in rDataMap) {
       if ((week.indexOf(weekDay) + 1) == rec["weekDay"]) {
         var hour = int.parse(time.toString().split(":")[0]);
@@ -64,12 +53,6 @@ List<Future<List<Record>>> _uFuture = [];
         var timeNow = int.parse(hour.toString() + "" + min);
         var timeRecStart = rec["startTime"].toString().split(":").join();
         if (timeNow < int.parse(timeRecStart)) {
-          if (count == 0){
-            print(count);
-            await showNotification(count, rec["subject"], rec["startTime"], rec["classroom"]);
-            print(count);
-            count++;
-          }
           today.add(Record(rec["weekDay"], rec["subject"], rec["sCode"], rec["lecturer"], rec["classroom"], rec["facSem"], rec["startTime"], rec["endTime"]));
         }
       }
@@ -135,31 +118,8 @@ List<Future<List<Record>>> _uFuture = [];
   //   );
   // }
 
-  Future<void> showNotification(int id, String sub, String st, String cls) async {
-    var android = new AndroidNotificationDetails(
-        'id', 'NAME', 'DESCRIPTION',
-        priority: Priority.High,
-        importance: Importance.Max,
-        enableVibration: true
-    );
-    var iOS = new IOSNotificationDetails();
-    var platform = new NotificationDetails(android, iOS);
-    print("Notification set: $id $sub $st $cls");
-    await flutterLocalNotificationsPlugin.showWeeklyAtDayAndTime(
-        id,
-        '$sub',
-        'You have class at $st in block/class $cls',
-        Day.Thursday,
-        Time(08, 45, 0),
-        platform,
-        // payload: 'lol $sub'
-    );
-    print("yeah");
-  }
-
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     return Material(
       child: Scaffold(
         appBar: AppBar(
@@ -300,8 +260,7 @@ List<Future<List<Record>>> _uFuture = [];
   }
 
   
-  @override
-  bool get wantKeepAlive => true;
+
 }
 
 class Record {
