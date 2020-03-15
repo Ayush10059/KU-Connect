@@ -30,8 +30,7 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
       var android = new AndroidInitializationSettings('@drawable/ku');
       var ios = new IOSInitializationSettings();
       var initSetttings = new InitializationSettings(android,ios);
-      flutterLocalNotificationsPlugin.initialize(initSetttings, //onSelectNotification: selectNotification
-    );
+      flutterLocalNotificationsPlugin.initialize(initSetttings);
     doEveryThing().then((dynamic d) {
       Navigator.pushReplacementNamed(context, "/app");
     });
@@ -80,9 +79,7 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
         week[int.parse(dy) - 1],
         Time(hour, 45, 0),
         platform,
-        // payload: 'lol $sub'
     );
-    print("yeah");
   }
 
   @override
