@@ -13,6 +13,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with AutomaticKeepAliveClientMixin{
 
+//initialize data
   String name, email, faculty, joinYear, currentYear;
   String code;
   Future fut;
@@ -24,6 +25,7 @@ void initState() {
   fut = getData();
 }
 
+//function for 
 Future getData() async {
   Storage user = new Storage("local.json");
   String uData = await user.readData();
@@ -39,6 +41,7 @@ Future getData() async {
   });
 }
 
+//UI for Profile page
   @override
 Widget build(BuildContext context) {
   super.build(context);
@@ -50,66 +53,66 @@ Widget build(BuildContext context) {
           backgroundColor: Colors.white,
         ),
 
-        body:  FutureBuilder(
-                    future: fut,
-                    builder: (BuildContext context, snapshot) {
-                      if(snapshot.connectionState == ConnectionState.waiting)
-                      return Container();
-  
-                      else
-                        return Container(
-                          child: Center(
-                            child: Column(
-                              children: [
-                                Image.asset('assets/KU.png', scale: 4.0,),
+        body: FutureBuilder(
+          future: fut,
+          builder: (BuildContext context, snapshot) {
+          if(snapshot.connectionState == ConnectionState.waiting)
+          return Container();
 
-                                Padding(padding: EdgeInsets.only(top: 40.0),
-                                  child: ListView(
-                                    shrinkWrap: true,
-                                    physics: ClampingScrollPhysics(),
-                                    children: <Widget>[
+          else
+            return Container(
+              child: Center(
+                child: Column(
+                  children: [
+                    Image.asset('assets/KU.png', scale: 4.0,),
 
-                                      ListTile(
-                                        title: Center(child: Text(code, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
-                                      ),
-                                      
+                    Padding(padding: EdgeInsets.only(top: 40.0),
+                      child: ListView(
+                        shrinkWrap: true,
+                        physics: ClampingScrollPhysics(),
+                          children: <Widget>[
 
-                                      ListTile(
-                                        title: Center(child: Text('Batch: ' + joinYear, style: TextStyle(fontWeight: FontWeight.bold),)),
-                                        subtitle: Center(child: Text('Current year: ' + currentYear)),
-                                      ),
+                            ListTile(
+                              title: Center(child: Text(code, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
+                            ),
+                            
 
-                                      ListTile(
-                                        title: Center(child: Text(name, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
-                                        subtitle: Center(child: Text(email)),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                            ListTile(
+                              title: Center(child: Text('Batch: ' + joinYear, style: TextStyle(fontWeight: FontWeight.bold),)),
+                              subtitle: Center(child: Text('Current year: ' + currentYear)),
+                            ),
 
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 40.0),
-                                  child: Center(child: FlatButton(
-                                    color: Colors.redAccent[100],
-                                    child: Text('Sign out'),
-                                    onPressed: () {
-                                      Storage user = new Storage("user.json");
-                                      user.writeData("").then((File fs) {
-                                        print("Data cleared...");
-                                        Navigator.pushReplacementNamed(context, "/signin");
-                                      });
-                            }),
-                          ),
-                        )
-                        ],
+                            ListTile(
+                              title: Center(child: Text(name, style: TextStyle(fontSize: 20.0,fontWeight: FontWeight.bold),)),
+                              subtitle: Center(child: Text(email)),
+                            )
+                          ],
+                        ),
                       ),
-                  ),
-                );
-              }
+
+                      Padding(
+                        padding: const EdgeInsets.only(top: 40.0),
+                        child: Center(child: FlatButton(
+                          color: Colors.redAccent[100],
+                          child: Text('Sign out'),
+                          onPressed: () {
+                            Storage user = new Storage("user.json");
+                            user.writeData("").then((File fs) {
+                              print("Data cleared...");
+                              Navigator.pushReplacementNamed(context, "/signin");
+                            });
+                          }),
+                        ),
+                      )
+                  ],
+                ),
+              ),
+            );
+          }
        ),
       )
-    );
-  }
+  );
+}
 
 @override
 bool get wantKeepAlive => true;

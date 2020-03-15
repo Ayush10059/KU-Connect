@@ -8,6 +8,7 @@ class Routine extends StatelessWidget {
 
   Routine(this.cls);
 
+//UI for Routine page
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,14 +32,18 @@ class Routine extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20.0,),
+
+              //lecturer
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text("Lecturer: " + cls.lecturer, style: TextStyle(fontSize: 18.0),),
               ),
+              //classroom
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text("Classroom: " + cls.classroom, style: TextStyle(fontSize: 18.0),),
               ),
+              //Department
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text("Department: " + cls.facSem, style: TextStyle(fontSize: 18.0),),

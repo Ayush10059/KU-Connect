@@ -15,7 +15,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-
+//Initialize date and time
 DateTime now = new DateTime.now();
 
 var day = DateFormat.d().format(now);
@@ -34,11 +34,13 @@ List<Future<List<Record>>> _uFuture = [];
   void initState() {
     super.initState();
 
+//initial funtion call
     _uFuture.add(getOngoingData());
     _uFuture.add(getUpcomingData());
     _uFuture.add(getPrevData());
   }
   
+  //funtion for upcomming class
   Future <List <Record>> getUpcomingData() async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
@@ -60,6 +62,7 @@ List<Future<List<Record>>> _uFuture = [];
     return today;
   }
 
+//funtion for previous class
   Future <List <Record>> getPrevData() async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
@@ -79,12 +82,10 @@ List<Future<List<Record>>> _uFuture = [];
         }
       }
     }
-    // for (var t in today)
-    //   print(t.sCode);
     return today;
   }
   
-  
+//funtion for ongoing class   
   Future <List <Record>> getOngoingData() async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
@@ -108,16 +109,8 @@ List<Future<List<Record>>> _uFuture = [];
     return today;
   }
 
-  // Future<void> selectNotification(String payload) {
-  //   showDialog(
-  //     context: context,
-  //     builder: (_) => new AlertDialog(
-  //       title: Text("KU-Connect"),
-  //       content: Text(payload),
-  //     )
-  //   );
-  // }
 
+//UI for home page
   @override
   Widget build(BuildContext context) {
     return Material(
@@ -140,6 +133,7 @@ List<Future<List<Record>>> _uFuture = [];
                 )
             ),
 
+            //Analog clock
             FlutterAnalogClock(
               dateTime: DateTime.now(),
               dialPlateColor: Colors.grey[200],
@@ -164,6 +158,7 @@ List<Future<List<Record>>> _uFuture = [];
               decoration: const BoxDecoration(),
             ),
 
+            //Digital Clock
             Padding(
               padding: const EdgeInsets.all( 20.0),
               child: DigitalClock(
@@ -186,6 +181,8 @@ List<Future<List<Record>>> _uFuture = [];
               ),
             ),
 
+
+            //ongoing class
             Padding(
               padding: const EdgeInsets.only(left: 5.0, bottom: 8.0),
               child: Text("Ongoing Class: ", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
@@ -220,6 +217,7 @@ List<Future<List<Record>>> _uFuture = [];
               }
             ),
 
+            //upcoming classes
             Padding(
               padding: const EdgeInsets.only(left: 5.0, top: 10.0, bottom: 10.0),
               child: Text("Upcoming Class(es): ", style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),),
@@ -263,6 +261,7 @@ List<Future<List<Record>>> _uFuture = [];
 
 }
 
+//class to initialize data
 class Record {
   final int weekDay;
   final String subject;

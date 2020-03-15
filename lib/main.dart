@@ -8,7 +8,10 @@ import 'package:ku/Load.dart';
 
 void main() {
   runApp(MaterialApp(
+
+    //routes
     routes: {
+      //initial route
       '/': (context) => Splash(),
       '/app': (context) => App(),
       '/signin': (context) => SignIn(),

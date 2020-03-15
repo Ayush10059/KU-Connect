@@ -6,11 +6,14 @@ import 'package:ku/Records.dart';
 
 class App extends StatelessWidget {
   @override
+
+  //UI for App
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
         bottomNavigationBar: BottomAppBar(
+          //TabBar view
           child: TabBar(
             indicatorColor: Colors.deepOrangeAccent,
                 tabs: <Widget>[

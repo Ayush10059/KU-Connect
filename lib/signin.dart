@@ -14,6 +14,7 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   
+  //initialize variables
   dynamic token;
   String dataFromFile;
 
@@ -21,6 +22,7 @@ class _SignInState extends State<SignIn> {
     dataFromFile = "Empty";
   }
 
+//set initial state
 @override
   void initState() {
     super.initState();
@@ -35,9 +37,14 @@ class _SignInState extends State<SignIn> {
           if (currentTime < uDataMap["token"]["expiration"]) {
             Storage routineData = new Storage("routine.json");
             routineData.readData().then((String rData) {
+              //check if there is data in routine.json
+              //route to load if there is no data in routine.json
               if (rData == "null" || rData.length == 0) {
                 Navigator.pushReplacementNamed(context, "/load");
-              } else {
+              } 
+
+              //route to app if there is data in routine.json
+              else {
                 Navigator.pushReplacementNamed(context, "/app");
               }
             });
@@ -47,6 +54,7 @@ class _SignInState extends State<SignIn> {
     });
   }
 
+//obsure text
   bool _obscureText = true;
   void _toggle() {
     setState(() {
@@ -54,6 +62,7 @@ class _SignInState extends State<SignIn> {
     });
   }
 
+//initialize variables for token checking
   bool loading = false;
   final _formKey = GlobalKey<FormState>();
 
@@ -61,11 +70,14 @@ class _SignInState extends State<SignIn> {
   String code = '';
   String errorRegister = '';
 
+//function to send user info and pass to server
   getData() {  
     String body = '{"pass": "' + pass.trim() + '", "code": "' + code.trim() + '"}';
 
     post('http://34.227.26.246/api/user/signin', headers: headers, body: body).then((Response res) {
       Map<String, dynamic> signInRes = jsonDecode(res.body.toString());
+
+      //getdata from server and assign them
       if (signInRes["Error"].toString() == "null") {
         token = signInRes["token"];
         String exp = token["expiration"].toString();
@@ -80,9 +92,11 @@ class _SignInState extends State<SignIn> {
         String currentYear = signInRes["user"]["currentYear"].toString();
         String userD = '{ "name" : "$name" , "email" : "$email" , "code" : "$code" , "faculty" : "$faculty" , "joinYear" : "$joinYear" , "currentYear" : "$currentYear" }';
 
+        //write user data to local.json
         Storage local = new Storage("local.json");        
         local.writeData(userD);
 
+        //route to load page
         Storage userData = new Storage("user.json");
         userData.writeData(bodyStr).then((File uFile) {
           Navigator.pushReplacementNamed(context, "/load");
@@ -91,6 +105,7 @@ class _SignInState extends State<SignIn> {
     });
   }
 
+//UI for sign in page
   @override
   Widget build(BuildContext context) {
     Widget loadingIndicator = loading ? new Container(
@@ -106,6 +121,8 @@ class _SignInState extends State<SignIn> {
       centerTitle: true,
       title: Text('Sign In', style: TextStyle(color: Colors.black),),
       actions: <Widget>[
+
+        //button to route to register page
         FlatButton.icon(
           icon: Icon(Icons.person_add),
           label: Text('Register'),
@@ -126,6 +143,8 @@ class _SignInState extends State<SignIn> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               SizedBox(height: 20.0),
+
+              //user code text field
               TextFormField(
                 decoration: InputDecoration(
                   icon: Icon(Icons.person),
@@ -145,6 +164,7 @@ class _SignInState extends State<SignIn> {
 
               SizedBox(height: 20.0),
               
+              //pass text field
               TextFormField(
                 obscureText: _obscureText,
                 decoration: InputDecoration(
@@ -168,6 +188,7 @@ class _SignInState extends State<SignIn> {
               
               SizedBox(height: 20.0),
               
+              //button for sign in
               RaisedButton(
                 color: Colors.redAccent[100],
                 child: Text('Sign In'),

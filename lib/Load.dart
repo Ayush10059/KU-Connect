@@ -35,6 +35,8 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
       Navigator.pushReplacementNamed(context, "/app");
     });
   }
+
+  //function notification
   Future doEveryThing () async {
     Storage userData = new Storage("user.json");
     String uData = await userData.readData();
@@ -56,6 +58,8 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
     }
   }
 
+
+//funtion to show notification
   Future<void> showNotification(int id, String sub, String st, String dy, String cls) async {
     var android = new AndroidNotificationDetails(
         'id', 'NAME', 'DESCRIPTION',
@@ -85,6 +89,8 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
+
+//UI for load page
   @override
   Widget build(BuildContext context) {
     super.build(context);

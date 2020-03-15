@@ -8,15 +8,20 @@ class Storage {
   Storage(String fName) {
     fileName=fName;
   }
+
+  //get directory in device
   Future<String> get localPath async {
     final directory = await getApplicationDocumentsDirectory();
     return directory.path;
   }
 
+  //get file in directory
   Future<File> get localFile async {
     final path = await localPath;
     return File('$path/$fileName');
   }
+
+  //funtion to read data from file
   Future<String> readData() async {
     try {
       final file = await localFile;
@@ -26,6 +31,8 @@ class Storage {
       return "error";
     }
   }
+
+  //function to write data to file
   Future<File> writeData(String data) async {
     final file = await localFile;
     return file.writeAsString("$data");

@@ -23,6 +23,7 @@ List<Future<List<Record>>> d=[];
       d.add(getData(i+1));
   }
 
+//funtion for setting data from routine.json
   Future <List <Record>> getData(int i) async {
     Storage routinedata = new Storage("routine.json");
     String rData = await routinedata.readData();
@@ -35,6 +36,7 @@ List<Future<List<Record>>> d=[];
     return week;
   }
 
+//UI for records page
   @override
   Widget build(BuildContext context) {
     super.build(context);

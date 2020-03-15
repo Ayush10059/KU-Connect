@@ -12,6 +12,8 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
 
+
+//initialize variables
   bool loading = false;
 
   String name = '';
@@ -19,6 +21,8 @@ class _RegisterState extends State<Register> {
   String code = '';
   String errorRegister = '';
 
+
+//funtion for sending user data to the server to register
   getData() async {
     Map<String, String> headers = {"Content-type": "application/json"};
 
@@ -40,6 +44,7 @@ class _RegisterState extends State<Register> {
   }
 
 
+//UI for Reister page
   @override
   Widget build(BuildContext context) {
     return loading ? Splash() :  Scaffold(
@@ -50,7 +55,6 @@ class _RegisterState extends State<Register> {
         leading: Image.asset("assets/KU.png"),
         backgroundColor: Colors.white,
         title: Text('Join KU Connect', style: TextStyle(color: Colors.black),),
-
       ),
 
       body: Container(
@@ -61,6 +65,8 @@ class _RegisterState extends State<Register> {
             children: <Widget>[
 
               SizedBox(height: 20.0),
+
+              //Text field for name
               TextFormField(
                 decoration: InputDecoration(
                     icon: Icon(Icons.person),
@@ -71,6 +77,8 @@ class _RegisterState extends State<Register> {
                 },
               ),
               SizedBox(height: 20.0),
+
+              //text field for email
               TextFormField(
                 decoration: InputDecoration(
                     icon: Icon(Icons.email),
@@ -81,6 +89,8 @@ class _RegisterState extends State<Register> {
                 },
               ),
               SizedBox(height: 20.0),
+
+              //text field for ID-code
               TextFormField(
                 decoration: InputDecoration(
                     icon: Icon(Icons.branding_watermark),
@@ -92,6 +102,8 @@ class _RegisterState extends State<Register> {
               ),
 
               SizedBox(height: 20.0),
+
+              //button for register
               RaisedButton(
                 color: Colors.redAccent[100],
                 child: Text('Register'),
