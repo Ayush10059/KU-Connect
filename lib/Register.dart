@@ -36,15 +36,7 @@ class _RegisterState extends State<Register> {
       setState(() {
         errorRegister = '';
       });
-      Map<String, dynamic> token = resp["user"]["token"];
-      int pass = resp["pass"];
-      print("Passcode: ");
-      print(pass);
-      print(token);
     }
-
-    print(response.body);
-    print(response.statusCode);
   }
 
 
@@ -105,6 +97,7 @@ class _RegisterState extends State<Register> {
                 child: Text('Register'),
                 onPressed: (){
                 getData();
+                Navigator.pushNamed(context, '/signin');
                 }
               ),
               Text(
