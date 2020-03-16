@@ -49,18 +49,16 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
 
     Storage routinedata = new Storage("routine.json");
     await routinedata.writeData(res.body.toString());
-    List rtData = jsonDecode(res.body);
+    var rtData = jsonDecode(res.body.toString());
     int count = 0;
-    for (var t in rtData) {
-      Map<String, dynamic> rec = jsonDecode(t);
+    for (var rec in rtData) {
       await showNotification(count, rec["subject"], rec["startTime"], rec["weekDay"], rec["classroom"]);
       count++;
     }
   }
 
-
-//funtion to show notification
-  Future<void> showNotification(int id, String sub, String st, String dy, String cls) async {
+  //funtion to show notification
+  Future<void> showNotification(int id, String sub, String st, int dy, String cls) async {
     var android = new AndroidNotificationDetails(
         'id', 'NAME', 'DESCRIPTION',
         priority: Priority.High,
@@ -71,7 +69,7 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
     var platform = new NotificationDetails(android, iOS);
     print("Notification set: $id $sub $st $cls");
     var week = [Day.Sunday, Day.Monday, Day.Tuesday, Day.Wednesday, Day.Thursday, Day.Friday, Day.Saturday];
-    print(week[int.parse(dy) - 1]);
+    print(week[dy - 1]);
     var hour = int.parse(st.split(":")[0]) - 1;
     if (hour == 0)
       hour = 12;
@@ -80,7 +78,7 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
         id,
         '$sub',
         'You have class at $st in block/class $cls',
-        week[int.parse(dy) - 1],
+        week[dy - 1],
         Time(hour, 45, 0),
         platform,
     );
@@ -88,7 +86,6 @@ class _LoadState extends State<Load> with AutomaticKeepAliveClientMixin {
 
   @override
   bool get wantKeepAlive => true;
-
 
 //UI for load page
   @override
